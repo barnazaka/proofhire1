@@ -6,6 +6,12 @@
 
 ---
 
+# Contract
+
+contract: mn_fc728cd5c34b400dd57d518a75b5e056bbb3d1107ee1a13eebd39cf3aa
+
+---
+
 ## What is ProofHire?
 
 ProofHire is a decentralized hiring platform built on the [Midnight Network](https://midnight.network). Candidates submit their CV details, generate Zero Knowledge Proofs for each section (education, skills, experience, certifications), and deploy a smart contract to the Midnight Preview testnet. Recruiters can verify any credential claim on-chain without ever seeing the raw data.
