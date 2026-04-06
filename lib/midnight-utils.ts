@@ -1,5 +1,6 @@
 'use client';
 
+import '@midnight-ntwrk/dapp-connector-api';
 import type { InitialAPI } from '@midnight-ntwrk/dapp-connector-api';
 
 export interface WalletConnection {
@@ -8,17 +9,31 @@ export interface WalletConnection {
   config: any;
 }
 
-// Wait for Lace wallet to inject into window
+export const shortenAddress = (address: string) => {
+  if (!address) return '';
+  if (address.length <= 13) return address;
+  return `${address.slice(0, 8)}...${address.slice(-6)}`;
+};
+
+export const checkWalletAvailable = () => {
+  if (typeof window === 'undefined' || !(window as any).midnight) return false;
+  return (window as any).midnight.mnLace !== undefined ||
+    Object.values((window as any).midnight).some(
+      (wallet) => !!wallet && typeof wallet === 'object' && 'apiVersion' in (wallet as any)
+    );
+};
+
 export const waitForWallet = (): Promise<boolean> => {
   return new Promise((resolve) => {
+    if (typeof window === 'undefined') { resolve(false); return; }
     let attempts = 0;
     const interval = setInterval(() => {
-      if (typeof window !== 'undefined' && (window as any).midnight?.mnLace) {
+      if (checkWalletAvailable()) {
         clearInterval(interval);
         resolve(true);
       }
       attempts++;
-      if (attempts > 20) {
+      if (attempts > 10) {
         clearInterval(interval);
         resolve(false);
       }
@@ -28,24 +43,36 @@ export const waitForWallet = (): Promise<boolean> => {
 
 // Connect to Lace wallet on Preview network
 export const connectWallet = async (): Promise<WalletConnection> => {
+  if (typeof window === 'undefined') throw new Error('Not in browser environment.');
+
   const found = await waitForWallet();
   if (!found) {
-    throw new Error('Lace wallet not found. Please install the extension and refresh.');
+    throw new Error('Midnight Lace wallet not found. Please install the extension and refresh the page.');
   }
 
-  const wallet = (window as any).midnight!.mnLace as InitialAPI;
-  const connectedApi = await wallet.connect('preview');
+  // Handles both mnLace and UUID-keyed wallets (v4.x)
+  const walletEntry = (
+    (window as any).midnight.mnLace ||
+    Object.values((window as any).midnight).find(
+      (wallet) => !!wallet && typeof wallet === 'object' && 'apiVersion' in (wallet as any)
+    )
+  ) as InitialAPI | undefined;
 
-  // Get config dynamically - never hardcode proof server URLs
+  if (!walletEntry) throw new Error('No compatible Midnight wallet found.');
+
+  const connectedApi = await walletEntry.connect('preview');
+
+  // Get config dynamically from wallet - never hardcode proof server URLs
   const config = await connectedApi.getConfiguration();
   console.log('[ProofHire] Wallet config:', config);
-
-  const status = await connectedApi.getConnectionStatus();
-  console.log('[ProofHire] Connection status:', status);
 
   const addresses = await connectedApi.getShieldedAddresses();
   const address = addresses.shieldedAddress;
 
+  const status = await connectedApi.getConnectionStatus();
+  if (!status) throw new Error('Connection failed. Make sure Lace is set to Preview network.');
+
+  console.log('[ProofHire] Connected:', address);
   return { address, connectedApi, config };
 };
 

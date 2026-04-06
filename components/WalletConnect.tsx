@@ -108,3 +108,5 @@ export default function WalletConnect({ role, onConnected }: WalletConnectProps)
     </div>
   );
 }
+
+
