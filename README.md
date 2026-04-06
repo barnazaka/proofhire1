@@ -269,4 +269,4 @@ Circuit returns true/false — zero raw data exposed
 
 ---
 
-Built with ❤️ for the Midnight Hackathon 2026
+# DEX
