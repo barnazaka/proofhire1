@@ -8,7 +8,7 @@
 
 # Contract
 
-contract: mn_fc728cd5c34b400dd57d518a75b5e056bbb3d1107ee1a13eebd39cf3aa
+contract: mn_d859b6887d635fd543f1134bc669c136051910eaf66ec2827c91740bce
 
 ---
 
