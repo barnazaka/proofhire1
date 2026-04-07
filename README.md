@@ -8,7 +8,7 @@
 
 # Run on Web
 
-Open `https://proofhire1-k8d6.vercel.app/`
+Open [ProofHire Website for Demo](https://proofhire1-k8d6.vercel.app/)
 
 ---
 
