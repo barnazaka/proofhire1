@@ -6,6 +6,12 @@
 
 ---
 
+# Run on Web
+
+Open `https://proofhire1-k8d6.vercel.app/`
+
+---
+
 # Contract
 
 contract: mn_d859b6887d635fd543f1134bc669c136051910eaf66ec2827c91740bce
